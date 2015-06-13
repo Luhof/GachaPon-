@@ -1,116 +1,58 @@
-/*
+var c = document.getElementById("game");
+var cTop = c.offsetTop;
+var cLeft = c.offsetLeft;
 
-Feel free to check my code, use it and modify it,
-but don't claim that it's yours and don't make money out of it.
+var ctx = c.getContext("2d");
 
-Anyway, for now this is one hell of a mess right here.
-Be careful, cleaning my code isn't my priority yet ;)
+c.addEventListener('mousedown', mouseClick, false);
 
+var consoleLog = "console.log";
 
-*/
-
-inventory = [];
-trinkets = [];
-
-collections = [];
-
-for(i=0; i<4; i++){
-	collections[i] = new Collection();
-}
-
-collections[0].check("food");
-collections[1].check("vidya");
-collections[2].check("animals");
+//drawMenu
+var machine = new Machine();
+hud = new Hud();
+hud.addButton(0, 600, 200, 72, "#345609");
+hud.addButton(200, 600, 200, 72, "#3FF520");
 
 
-var boughtCaps = 0;
+//main loop
+var FPS = 30;
+setInterval(function() {
 
-var h=document.getElementById("machine");
-var inventoryDiv = document.getElementById("inventory");
+	
+	machine.drawMachine();
+	hud.drawHud();
 
-h.onclick = function machineClick(){
+	ctx.fillStyle = "#fff";
+	ctx.font = "30px Arial";
+	ctx.fillText(consoleLog,550,50);
 
-	boughtCaps++;
-	document.getElementById("gameLog").innerHTML = "Gacha Gacha Pon ! You just bought 1 capsule.<br/>Total capsules bought : "+boughtCaps+"";
 
-	var randColor = Math.floor(Math.random()*4);
-
-	switch(randColor){
-
-		case 0:
-		color = "blue";
-		break;
-		case 1:
-		color = "red";
-		break;
-		case 2:
-		color = "yellow";
-		break;
-		case 3:
-		color = "green";
-		break;
-		default :
-		color = "green";
-		break;
-	}
-
-	var newCaps = new Capsule(color);
-	inventory.push(newCaps);
-	InventoryUpdate();
-
-}
+}, 1000/FPS);
 
 
 
-function capsClick(i){
-
-	inventory[i].openCaps();
-	inventory[i].opened = true;
-	InventoryUpdate();
-}
-
-function InventoryUpdate(){
-
-	var objTo = document.getElementById('inventory');
-	objTo.innerHTML = "";
-
-	for(i=0; i<inventory.length; i++){
-
-		if(inventory[i].opened == false){
-
-		var divtest = document.createElement("div");
-		divtest.setAttribute("class", "caps");
-		divtest.setAttribute("onclick", "capsClick("+i+")");
-		divtest.innerHTML = "<img src='img/caps/32/"+inventory[i].color+".png' alt='cap'/>";
-		objTo.appendChild(divtest);
-		}
-
-	}
 
 
-}
+function mouseClick(){
+	
+	    x = event.pageX - cLeft,
+        y = event.pageY - cTop;
+            // Collision detection between clicked offset and element.
+    	hud.elements.forEach(function(element) {
+	        if (y > element.y && y < element.y + element.height 
+	            && x > element.x && x < element.x + element.width) {
+	        	element.clicked();
+	        }
+    	});
 
-function trinketUpdate(){
-
-	var objTo = document.getElementById('trinkets');
-	objTo.innerHTML = "";
-
-	for(i=0; i<trinkets.length; i++){
-
-		var divtest = document.createElement("div");
-		divtest.setAttribute("class", "trinkets");
-		divtest.setAttribute("title", trinkets[i].description);
-		divtest.innerHTML = "<img src='img/trinkets/32/"+trinkets[i].url+".png' alt='trinket'/>"+trinkets[i].quantity+"";
-		objTo.appendChild(divtest);
-
-	}
-
-
-}
-
-
-function displayHud(newId){
-	document.getElementById("game").style.display = 'none';
-	document.getElementById("updateLog").style.display = 'none';
-	document.getElementById(newId).style.display = 'block';
+    	if(y > machine.y && y < machine.y + machine.height
+    		&& x > machine.x && x < machine.x + machine.width){
+    		console.log("yes");
+    		machine.clicked();
+    	}
+    	else{
+    		consoleLog = "clicked nowhere :)";
+    	}
+    		
 }
